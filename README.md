@@ -3,7 +3,9 @@ from courses provided by edX.org and coursera.org.
 
 Cases highlighting tools and techniques for reproducible analysis.
 
-Specific studies are:
+Specific studies are:  
+- Reproducible Research, edX.org    
+  - Air pollution  
 
 Sources:  
 https://www.coursera.org/learn/reproducible-templates-analysis/  
