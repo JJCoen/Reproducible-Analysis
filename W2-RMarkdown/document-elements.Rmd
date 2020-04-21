@@ -3,13 +3,20 @@ title: "document-elements"
 author: "Jim Coen"
 date: "4/21/2020"
 output:
+  html_document:
+    df_print: paged
   pdf_document: default
-
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+* dependencies
+```{r}
+library(tinytex)
+```
+
 
 ## R Markdown
 
@@ -38,3 +45,41 @@ knitr::kable(head(cars),
              caption = "cars dataset")
 ```
 
+******************************************
+* The following text is provided
+* for easier cutting and pasting as you
+* work through the exercises in
+* Module 2 - lesson 4: Images, Video
+* and Footnotes  
+******************************************
+
+## Insert Images
+
+Here is an image inserted
+
+![sunstar](./Sunstar/sunstar.png)
+
+
+Here is the R logo
+
+![r logo](https://www.r-project.org/logo/Rlogo.svg)
+
+
+## Insert an Animated GIF and Video
+
+*** Remove these two commands if want to knit to word or pdf  ***
+
+![sunstar](Sunstar/sunstar.gif) 
+
+![sunstar](Sunstar/sunstar.mp4)
+
+
+## Insert text with some footnotes
+
+Here is a footnote reference [^1] and another [^longnote]
+
+
+Here is an inline footnote ^[Inlines notes are easier to write, since you don't have to pick an identifier and move down to type the note.]
+
+[^1]: Here is the footnote.
+[^longnote]: Here's one with multiple blocks.
