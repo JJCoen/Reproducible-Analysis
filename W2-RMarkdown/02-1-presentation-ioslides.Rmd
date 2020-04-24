@@ -49,10 +49,6 @@ A simple linear regression equation
 
 $$ Y = \beta_0 + \beta_1x $$
 
-
-## A slide with an inserted image {.flexbox .vcenter}
-
-
 ## A slide with 2 columns an image and a bulleted list {.columns-2}
 
 ![](./Sunstar/sunstar.png)
@@ -85,39 +81,7 @@ $$ Y = \beta_0 + \beta_1x $$
 
 ## A slide with an inserted image {.flexbox .vcenter}
 
-
-## A slide with 2 columns an image and a bulleted list {.columns-2}
-
 ![](./Sunstar/sunstar.png)
-
-- bullet 1
-- bullet 2
-- bullet 3
-
-## A slide with an inserted image
-
-Here is an image inserted
-
-![sunstar](./Sunstar/sunstar.png)
-
-
-## A slide with a table
-
-```{r}
-knitr::kable(head(cars),
-             caption = "Top 6 Rows of Cars Dataset")
-```
-
-
-## A slide with an equation
-
-A simple linear regression equation
-
-$$ Y = \beta_0 + \beta_1x $$
-
-
-## A slide with an inserted image {.flexbox .vcenter}
-
 
 ## A slide with 2 columns an image and a bulleted list {.columns-2}
 
