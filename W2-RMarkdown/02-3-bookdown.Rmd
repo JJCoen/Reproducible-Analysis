@@ -1,0 +1,27 @@
+---
+title: "Bookdown"
+author: Jim Coen
+date: "4/22/2020"
+output: 
+    html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+setwd("W2-RMarkdown")
+```
+
+Clone the bookdown repo
+```{bash}
+source ~/.bashrc
+#./get-bookdown-demo.sh
+git status
+cd bookdown-demo
+```
+
+```{r}
+
+```
+
+
