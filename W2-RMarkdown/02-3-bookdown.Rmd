@@ -9,16 +9,8 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-setwd("W2-RMarkdown")
 ```
 
-Clone the bookdown repo
-```{bash}
-source ~/.bashrc
-#./get-bookdown-demo.sh
-git status
-cd bookdown-demo
-```
 
 ```{r}
 
