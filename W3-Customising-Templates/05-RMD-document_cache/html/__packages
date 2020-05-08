@@ -1,0 +1,9 @@
+base
+knitr
+rmdformats
+png
+ggplot2
+magrittr
+data.table
+psychTools
+psych

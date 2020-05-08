@@ -1,0 +1,267 @@
+---
+title: "05-RMD-document"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    highlight: kate
+---
+
+
+```{r setup, echo=FALSE, cache=FALSE}
+library(knitr)
+library(rmdformats)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=FALSE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+```
+
+```{r set global options, cache=TRUE, eval=FALSE}
+
+library(knitr)  # also contains include_graphics function
+
+opts_chunk$set(echo = FALSE, fig.width = "center",
+               fig.width = 10)
+
+```
+  
+- Dependencies
+This report depends on the following packages:
+```{r load packages}
+
+# tinytex::install_tinytex()  # install TinyTeX
+
+library(png)
+# library(tinytex)    # Error: LaTeX failed to compile
+suppressMessages(
+  library(ggplot2) )
+suppressMessages(
+  library(magrittr) )
+library(data.table) %>% suppressMessages()
+suppressMessages(
+ library(psychTools)  )# Contains "cubits" dataset
+suppressMessages(
+ library(psych)  )  # Contains "cubits" dataset and also
+                    # the functions "table2matrix" and "ellipses" 
+
+# Using `table2df` instead of `table2matrix`
+# source(file.path(wd, fsep = "/", "table2matrix.R") )
+```
+
+  
+How did Sir Francis Galton and Karl Pearson arrive at the correlation coefficient?
+
+Francis Galton introduced the 'co-relation' in 1888 with a paper discussing how to measure the relationship between two variables^1^. His primary example was the relationship between height and forearm length. The data table (cubits) is taken from Galton (1888)^[2]. Unfortunately, there seem to be some errors in the original data table in that the marginal totals do not match the table.
+
+```{r  "Galtons diagram",  fig.cap = "Galton's stature diagram", out.width = "150%"}
+# setwd("./Figures") %>% suppressMessages()
+# directory <- getwd()
+# Galtons_diag_path <- file.path(directory,
+#                                "Galton-height-cubit.gif")
+# knitr::include_graphics(Galtons_diag_path)
+# setwd("..")
+
+
+```
+
+This report provides a more complete description of the data and explains operation of given code ^[1].
+
+# Reflect on the Question
+
+Sir Francis Galton (1888) published the first demonstration of the correlation coefficient. The regression (or reversion to mediocrity) of the height to the length of the left forearm (a cubit) was found to 0.8.  There seem to be some errors in the table as published in that the row sums do not agree with the actual row sums. These data are used to create a data frame using `table2df` for demonstrations of analysis and displays of the data.
+(Above text from CRAN documentation ^[1])
+
+
+Althought both variables are in inches, they cover different value ranges. Even so, Galton wanted to measure the degree to which these variables associate with each other.
+
+## Inspect and clean the data set
+
+```{r load data}
+# raw_data <- read.csv("cubits.csv", header = TRUE) 
+# 
+# cubits_values <- as.data.frame(raw_data)
+# head(cubits_values, 9)
+# 
+# colnames(cubits_values) <- c("heights", 16.5,  "16.75", "17.25", "17.75", "18.25", "18.75", "19.25", "19.75")
+# names(cubits_values)
+
+data(cubits)
+cubits
+
+```
+
+A data frame with 9 rows for each height from 63 to 71 inches, as described in the package documentation ^[1].  Each of these height values can have counts in the following forearm ranges:
+
+16.5    Cubit length < 16.5
+16.75   16.5 <= Cubit length < 17.0
+17.25   17.0 <= Cubit length < 17.5
+17.75   17.5 <= Cubit length < 18.0
+18.25   18.0 <= Cubit length < 18.5
+18.75   18.5 <= Cubit length < 19.0
+19.25   19.0 <= Cubit length < 19.5
+19.75   19.5 <= Cubit length
+
+This is not a tidy dataset^[3] since variable values specify column headers.  Also, the rows give the number of observations for a particular height/cubit pair.  
+
+```{r clean data}
+cubit_points <- psych::table2df(cubits, 
+                                 labs = c("height","cubit")) %>% 
+  as.data.table()
+
+head(cubit_points)
+
+```
+
+Now each observation has its own row and the 'cubits' variable is in a single column.
+
+```{r plot_ellipses}
+psych::ellipses(cubit_points,n=1,main="Galton's co-relation data set")
+# This shows a number of observations at a given height/cubit pair.
+
+# Add jitter to distinguish points
+ellipses(jitter(cubit_points$height,3),jitter(cubit_points$cubit,3), 
+    pch=".", 
+    main="Galton's co-relation data  set",xlab="height", 
+    ylab="Forearm (cubit)") #add in some noise to see the points
+```
+
+Correlation measures the extent to which the data points congregate around a line.  To display this phenomena, draw ellipses centred around the means of height and cubit.
+
+Input to `ellipses`may be either two vectors or a matrix or data frame in two variables ^[1].
+
+
+## Consider the Process
+
+1. To compare the heights and cubits variabes, Galton converted the two  measures to standard units (z-scores) and calculated the product of z-score pairs for each point
+$$ z_{height} * z_{cubit} $$
+- Update the 'cubits_points' plot so as to include height cubit in standard units on the x and y axes. 
+- Adapt "cubits_points" df to include product of z-score pairs.
+
+2. To encapsulate all points in a single statistics, Galton asked Pearson to sum the z_score pairs and take the average value of the z-score products:
+$$\rho =  \textstyle \sum{z_{height} * z_{cubit}} / (n-1)$$
+- Calculate the correlation value, $\rho$.  
+
+- Describe the significance of $\rho$ by relating it to Prof. Joseph's notes
+
+3. Relate $/rho$ to the regression line for both the given data values and for standard units (z-scores).
+
+
+# Perform the Analysis
+## Galton's Diagram
+Recreate Galton's plot of height and forearm length
+
+Most points in the plot have several overlapping observations.  Therefore, add in some noise to see the points ^[1].
+
+```{r recreate_plot}
+# windowsFonts("Arial" = windowsFont("Arial"))
+# windowsFonts("Times" = windowsFont("Times"))
+# windowsFonts("Courier" = windowsFont("Courier"))
+
+cubit_p <- ggplot(cubit_points, aes(x=height, y=cubit)) + 
+  geom_point(size=1, alpha=0.7, shape = 20, colour = "darkred",
+             position = "jitter") +
+  xlab("Stature") + ylab("Left cubit") +
+ 
+  ggtitle("Left cubit to stature") +
+  theme(text = element_text(family = "Times", size = 16)) +
+  theme(plot.title=element_text(family="Times", 
+            hjust = 0.5))  # to centre the title + 
+  
+cubit_p
+
+#  scale_x_discrete(breaks=c("62", "63", "64", "65", "66", "67", 
+                   #            "68", "69", "70", "71", "72"),
+                   # labels = c("62", "63", "64", "65", "66", "67", 
+                   #            "68", "69", "70", "71", "72") ) +
+```
+1. Standard Units
+- Adapt "cubits_points" df to include product of z-score pairs.
+
+```{r z-scores}
+# convert to vectors
+n <- nrow(cubit_points)
+h <- cubit_points$height
+c <- cubit_points$cubit
+
+H <- matrix(h, n, 1) %>% suppressWarnings()
+C <- matrix(c, n, 1) %>% suppressWarnings()
+O <- matrix(1, 1, n) %>% suppressWarnings()   
+  # row vector of "ones"
+
+h_mean <- O %*% H / n
+c_mean <- O %*% C / n
+H_mean <- matrix(h_mean, n, 1) %>% suppressWarnings()   
+C_mean <- matrix(c_mean, n, 1) %>% suppressWarnings()   
+
+# centre the data
+Hc <- H - H_mean
+Cc <- C - C_mean
+h_sd <- sd(H)
+c_sd <- sd(C)
+
+# convert to standard units
+Hz <- Hc / h_sd
+Cz <- Cc / c_sd
+
+cubit_points[, c('height_z', 'cubit_z', 'z_products') :=
+   .(Hz, Cz, Hz * Cz) ]
+head(cubit_points)
+```
+
+- Update the 'cubits_points' plot so as to include height and cubit in standard units on the x and y axes. 
+
+```{r standard units}
+h_std_units_v <- c(h_mean - 2*h_sd, h_mean - h_sd, h_mean, h_mean + h_sd, h_mean + 2*h_sd)
+c_std_units_v <- c(c_mean - 2*c_sd, c_mean - c_sd, c_mean, c_mean + c_sd, c_mean + 2*c_sd)
+
+h_std_units_lab <- c("-2", "-1", "0", "1", "2")
+x_min = 62
+y_min = 15.75
+cubit_p +
+  xlim(x_min, 72) + 
+  ylim(y_min, 20) +
+  annotate(geom = "segment", x=h_std_units_v, xend=h_std_units_v,
+           y = y_min, yend=y_min+0.4, colour = "blue" ) + 
+
+  # offset the labels to prevent overwritting segment lines
+  annotate("text", x = h_std_units_v - 0.2, y = y_min, 
+           label = h_std_units_lab, 
+           colour = "blue") + 
+  annotate("text", x = 71, y = 16.5, 
+           label = "Standard Units", colour = "blue") +
+  # Again for the y axis
+  annotate(geom = "segment", x=x_min, xend=x_min + 0.6,
+           y=c_std_units_v, yend=c_std_units_v, colour = "blue" ) + 
+  # offset the labels to prevent overwritting segment lines
+  annotate("text", x = x_min+0.2, y = c_std_units_v + 0.2 , 
+           label = h_std_units_lab, 
+           colour = "blue") 
+#annotate(geom = "segment", x=62, xend=62.4,
+#           y=c_std_units_v, yend=c_std_units_v, colour = "blue" ) + 
+```
+
+
+```{r}
+WVPlots::ScatterHist(cubit_points, "height", "cubit",
+                     smoothmethod="lm",
+                     title="Height and Stature Distributions")
+```
+
+
+2. Calculate the correlation value, $\rho$, using the z-score products:
+$$\rho =  \textstyle \sum{z_{height} * z_{cubit}} / (n-1)$$
+
+```{r}
+rho_pearson <- sum(cubit_points$z_products) / (n-1)
+rho_pearson
+cor(cubit_points$height, cubit_points$cubit)
+```
+
+
